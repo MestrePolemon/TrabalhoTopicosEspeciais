@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, DateField, SelectMultipleField, widgets
+from wtforms import StringField, PasswordField, SubmitField, DateField, SelectMultipleField, widgets, SelectField
 from wtforms.validators import DataRequired, Length
 
 class FormularioCriarConta(FlaskForm):
@@ -19,5 +19,12 @@ class FormularioCriarTarefa(FlaskForm):
     data = DateField('Data', validators=[DataRequired()])
     descricao = StringField('Descrição', validators=[DataRequired()])
     usuarios = SelectMultipleField('Usuarios', option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
-    status = StringField('Status')
     submit = SubmitField('Criar Tarefa')
+
+class FormularioEditarTarefa(FlaskForm):
+    nome = StringField('Nome', validators=[DataRequired()])
+    data = DateField('Data', validators=[DataRequired()])
+    descricao = StringField('Descrição', validators=[DataRequired()])
+    status = SelectField('Status', choices=[('Pendente', 'Pendente'),('Ta indo ( EM ANDAMENTO)', 'Ta indo (EM ANDAMENTO)'), ('Concluida', 'Concluida')], validators=[DataRequired()])
+    usuarios = SelectMultipleField('Usuarios', option_widget=widgets.CheckboxInput(), widget=widgets.ListWidget(prefix_label=False))
+    submit = SubmitField('Editar Tarefa')

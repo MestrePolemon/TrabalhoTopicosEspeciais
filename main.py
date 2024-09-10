@@ -3,7 +3,7 @@ from flask import Flask, render_template, redirect, url_for, flash, request
 from config import app, db
 from models import User, load_user, Tarefa
 from flask_login import login_user, login_required, logout_user, current_user
-from formulario import FormularioCriarConta, FormularioLogin, FormularioCriarTarefa
+from formulario import FormularioCriarConta, FormularioLogin, FormularioCriarTarefa, FormularioEditarTarefa
 from werkzeug.security import generate_password_hash, check_password_hash
 
 @app.route('/')
@@ -66,7 +66,7 @@ def criartarefas():
             flash('Data inválida', 'danger')
             return redirect(url_for('criartarefas'))
 
-        tarefa = Tarefa(nome=nome, data=data, descricao=descricao, user_id=current_user.id)
+        tarefa = Tarefa(nome=nome, data=data, descricao=descricao, status = 'Pendente', user_id=current_user.id)
         db.session.add(tarefa)
         db.session.commit()
 
@@ -90,7 +90,7 @@ def visualizar_tarefas(id):
 def editar_tarefas(id):
     tarefa = Tarefa.query.get(id)
 
-    formulario = FormularioCriarTarefa(obj=tarefa)
+    formulario = FormularioEditarTarefa(obj=tarefa)
     formulario.usuarios.choices = [(user.id, user.usuario) for user in User.query.all()]
 
     if formulario.validate_on_submit():
