@@ -20,11 +20,11 @@
       </p>
       <p>Status: {{ tarefa.status }}</p>
       {% if tarefa.user_id == current_user.id %}
-      {% endif %}
         <div class="d-flex justify-content-between">
           <a href="{{ url_for('editar_tarefas', id=tarefa.id) }}" class="btn btn-outline-primary flex-fill me-1">Editar</a>
           <a href="{{ url_for('deletar_tarefas', id=tarefa.id) }}" class="btn btn-outline-danger flex-fill ms-1">Deletar</a>
         </div>
+      {% endif %}
       <a href="{{ url_for('gerenciador') }}" class="btn btn-outline-primary mt-3 w-100">Voltar</a>
     </div>
   </div>

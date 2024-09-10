@@ -89,6 +89,7 @@ def visualizar_tarefas(id):
 @login_required
 def editar_tarefas(id):
     tarefa = Tarefa.query.get(id)
+
     formulario = FormularioCriarTarefa(obj=tarefa)
     formulario.usuarios.choices = [(user.id, user.usuario) for user in User.query.all()]
 
@@ -113,9 +114,6 @@ def editar_tarefas(id):
 @login_required
 def deletar_tarefas(id):
     tarefa = Tarefa.query.get(id)
-    if tarefa.user_id != current_user.id:
-        flash('Você não tem permissão para deletar esta tarefa', 'danger')
-        return redirect(url_for('gerenciador'))
 
     if request.method == 'POST':
         nomeConfirmacao = request.form.get('nome_confirmacao')
