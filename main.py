@@ -6,9 +6,11 @@ from flask_login import login_user, login_required, logout_user, current_user
 from formulario import FormularioCriarConta, FormularioLogin, FormularioCriarTarefa, FormularioEditarTarefa
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
 @app.route('/')
 def home():
     return render_template('index.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -25,6 +27,7 @@ def register():
             db.session.commit()
             return redirect(url_for('login'))
     return render_template('register.html', form=formulario)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -44,11 +47,6 @@ def login():
             flash('Usuario ou senha incorretos', 'danger')
     return render_template('login.html', form=formulario)
 
-@app.route('/gerenciador')
-@login_required
-def gerenciador():
-    tarefas = Tarefa.query.filter((Tarefa.user_id == current_user.id) | (Tarefa.usuarios.any(id=current_user.id))).all()
-    return render_template('gerenciador.html', tarefas=tarefas)
 
 @app.route('/criartarefas', methods=['GET', 'POST'])
 @login_required
@@ -66,7 +64,7 @@ def criartarefas():
             flash('Data inválida', 'danger')
             return redirect(url_for('criartarefas'))
 
-        tarefa = Tarefa(nome=nome, data=data, descricao=descricao, status = 'Pendente', user_id=current_user.id)
+        tarefa = Tarefa(nome=nome, data=data, descricao=descricao, status='Pendente', user_id=current_user.id)
         db.session.add(tarefa)
         db.session.commit()
 
@@ -79,11 +77,13 @@ def criartarefas():
 
     return render_template('criartarefas.html', form=formulario)
 
+
 @app.route('/visualizar_tarefas/<int:id>')
 @login_required
 def visualizar_tarefas(id):
     tarefa = Tarefa.query.get(id)
     return render_template('visualizar_tarefas.html', tarefa=tarefa)
+
 
 @app.route('/editar_tarefas/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -110,6 +110,7 @@ def editar_tarefas(id):
 
     return render_template('editar_tarefas.html', form=formulario, tarefa=tarefa)
 
+
 @app.route('/deletar_tarefas/<int:id>', methods=['GET', 'POST'])
 @login_required
 def deletar_tarefas(id):
@@ -126,11 +127,31 @@ def deletar_tarefas(id):
             flash('Nome da tarefa incorreto', 'danger')
 
     return render_template('deletar_tarefas.html', tarefa=tarefa)
+
+
+@app.route('/gerenciador', methods=['GET', 'POST'])
+@login_required
+def gerenciador():
+    status = request.args.get('status')
+
+    if status == 'pendente':
+        tarefas = Tarefa.query.filter_by(status='Pendente', user_id=current_user.id).all()
+    elif status == 'andamento':
+        tarefas = Tarefa.query.filter_by(status='Em andamento', user_id=current_user.id).all()
+    elif status == 'concluida':
+        tarefas = Tarefa.query.filter_by(status='Concluida', user_id=current_user.id).all()
+    else:
+        tarefas = Tarefa.query.filter_by(user_id=current_user.id).all()
+
+    return render_template('gerenciador.html', tarefas=tarefas, status_filtro=status)
+
+
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
